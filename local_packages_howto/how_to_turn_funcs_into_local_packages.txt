@@ -1,0 +1,8 @@
+Put all functions / function code in R/ under your main desired directory, say pds/
+
+In pds/ -- include a DESCRIPTION file and a NAMESPACE file (both attached in this directory)
+
+Say path to pds is : /path/to/pds
+Then in Rstudio : devtools::install("/path/to/pds")
+
+and now you can simply use library(pds)
