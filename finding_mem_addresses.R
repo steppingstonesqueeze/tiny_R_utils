@@ -22,3 +22,25 @@ len_l1 <- length(l1)
 for (i in seq(len_l1)) {
 	print(obj_addr(l1[[i]]))
 }
+
+# shared memory
+
+df <- data.frame(
+  x = rnorm(1000),
+  y = runif(1000)
+)
+
+df2 <- df
+
+# check mem
+ref(df, df2) # tree of memory
+
+
+# are they sharing memory?
+
+share_mem <- function(a, b) {
+  obj_addr(a) == obj_addr(b)
+}
+
+share_mem(df, df2)
+
