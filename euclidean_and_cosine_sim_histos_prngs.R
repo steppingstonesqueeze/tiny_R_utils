@@ -86,4 +86,114 @@ Sys.sleep(5)
 ggplot(data.frame(cos_sim = cosine_sim_vals), aes(cos_sim)) +
   geom_histogram(bins = 100, fill = "green", alpha = 0.6) +
   ggtitle("Histogram of Pairwise Cosine Similarities - Uniform dist")
+ 
+#runif in 3D
+df <- data.frame(
+  x = runif(10000),
+  y = runif(10000),
+  z = runif(10000)
+)
+
+# make it so both dists have "spherical" sym :)
+df$x <- df$x - 0.5
+df$y <- df$y - 0.5
+df$z <- df$z - 0.5
+
+# Convert to matrix
+mat <- as.matrix(df)  # n x 2
+
+# ---- 1. Euclidean distances ----
+dists <- dist(mat)  # returns "dist" object with N choose 2 entries
+
+# ---- 2. Cosine similarity ----
+norm_mat <- mat / sqrt(rowSums(mat^2))  # normalize rows
+cosine_sim <- tcrossprod(norm_mat)      # cosine similarity matrix (n x n)
+cosine_sim_vals <- cosine_sim[upper.tri(cosine_sim)]
+
+# data
+ggplot(
+  data = df
+) + geom_point(aes(x = x, y = y), colour = "red") + 
+  ggtitle("10000 random 2D points drawn from uniform dist")
+
+Sys.sleep(5)
+
+# ---- Histogram plotting ----
+
+ggplot(data.frame(dist = as.vector(dists)), aes(dist)) +
+  geom_histogram(bins = 100, fill = "blue", alpha = 0.6) +
+  ggtitle("Histogram of Pairwise Euclidean Distances - Uniform dist")
+
+Sys.sleep(5)
+
+ggplot(data.frame(cos_sim = cosine_sim_vals), aes(cos_sim)) +
+  geom_histogram(bins = 100, fill = "green", alpha = 0.6) +
+  ggtitle("Histogram of Pairwise Cosine Similarities - Uniform dist")
+
+# runif in N D
+
+generate_uniform_nums <- function(...) {
+  
+  DEFAULTS <- list(dims = 3,
+                   min_val = 0.0,
+                   max_val = 1.0,
+                   N = 1000)
+  
+  args <- list(...)
+  
+  n_args <- names(args)
+  
+  if (length(n_args) == 0) {
+    # specify default args
+    dims <- DEFAULTS$dims
+    min_val <- DEFAULTS$min_val
+    max_val <-DEFAULTS$max_val
+    N <- DEFAULTS$N
+    
+  } else {
+    
+    # check which params are specified and accordingly set rest to defaults only
+    if ("dims" %in% n_args) {
+      dims <- args$dims
+    } else {
+      dims <- DEFAULTS$dims
+    }
+    
+    if ("min_val" %in% n_args) {
+      min_val <- args$min_val
+    } else {
+      min_val <- DEFAULTS$min_val
+    }
+    
+    if ("max_val" %in% n_args) {
+      max_val <- args$max_val
+    } else {
+      max_val <- DEFAULTS$max_val
+    }
+    
+    if ("N" %in% n_args) {
+      N <- args$N
+    } else {
+      N <- DEFAULTS$N
+    }
+    
+  } # if-else of params done
+  
+  df <- data.frame(runif(N, min = min_val, max = max_val))
+  
+  for (j in 2:dims) {
+    df2 <- data.frame(runif(N, min = min_val, max = max_val))
+    df <- bind_cols(df, df2)
+  }
+  
+  colnames(df) <- NULL # not needed for what follows
+  return(df)
+}
+
+d <- generate_uniform_nums(dims = 4, N = 5, max_val = 100)
+
+
+
+
+
 
