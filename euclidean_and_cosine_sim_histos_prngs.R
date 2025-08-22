@@ -190,7 +190,48 @@ generate_uniform_nums <- function(...) {
   return(df)
 }
 
-d <- generate_uniform_nums(dims = 4, N = 5, max_val = 100)
+df <- generate_uniform_nums(dims = 6, N = 10000)
+
+# give col names for plotting
+colnames(df) <- paste0("V", seq_along(df))
+
+# Convert to matrix
+mat <- as.matrix(df)  # n x 2
+
+# make it so both dists have "spherical" sym :)
+
+mat <- mat - 0.5 
+
+# ---- 1. Euclidean distances ----
+dists <- dist(mat)  # returns "dist" object with N choose 2 entries
+
+# ---- 2. Cosine similarity ----
+norm_mat <- mat / sqrt(rowSums(mat^2))  # normalize rows
+cosine_sim <- tcrossprod(norm_mat)      # cosine similarity matrix (n x n)
+cosine_sim_vals <- cosine_sim[upper.tri(cosine_sim)]
+
+# data
+ggplot(
+  data = df
+) + geom_point(aes(x = V1, y = V2), colour = "red") + 
+  ggtitle("10000 random 2D points drawn from uniform dist")
+
+Sys.sleep(5)
+
+# ---- Histogram plotting ----
+
+ggplot(data.frame(dist = as.vector(dists)), aes(dist)) +
+  geom_histogram(bins = 100, fill = "blue", alpha = 0.6) +
+  ggtitle("Histogram of Pairwise Euclidean Distances - Uniform dist")
+
+Sys.sleep(5)
+
+ggplot(data.frame(cos_sim = cosine_sim_vals), aes(cos_sim)) +
+  geom_histogram(bins = 100, fill = "green", alpha = 0.6) +
+  ggtitle("Histogram of Pairwise Cosine Similarities - Uniform dist")
+
+
+
 
 
 
