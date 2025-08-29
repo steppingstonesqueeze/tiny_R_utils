@@ -53,6 +53,14 @@ img_orig_sobelised <- correlate(img,
 
 plot(img_orig_sobelised)
 
+# timepass to set certain parts of the image to grayscale 1
 
+img2 <- img_gray
+
+img2[200:400, 200:400] <- 1
+
+plot(img_gray)
+Sys.sleep(4)
+plot(img2)
 
 
